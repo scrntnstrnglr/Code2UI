@@ -1,4 +1,4 @@
-function adjustAccountUnapplied(account : Account, adjustmentAmount : MonetaryAmount) {
+function adjustAccountUnapplied(account : String, adjustmentAmount : MonetaryAmount) {
   gw.transaction.Transaction.runWithNewBundle(\newBundle -> {
     account = newBundle.add(account)
     account.DefaultUnappliedFund.makeAdjustment(new MonetaryAmount(adjustmentAmount.negate(), Currency.TC_USD))

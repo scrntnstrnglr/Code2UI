@@ -1,6 +1,8 @@
 package com.gw.cip.main;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -69,27 +71,34 @@ public class Launcher {
 
         Document doc = docBuilder.newDocument();
         Element rootElement = doc.createElement("PCF");
+        rootElement.setAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
+        rootElement.setAttribute("xsi:noNamespaceSchemaLocation","../../../../../../pcf.xsd");
         doc.appendChild(rootElement);
         Element dvPanelElement = doc.createElement("DetailViewPanel");
+        dvPanelElement.setAttribute("id" , "TestDV");
         rootElement.appendChild(dvPanelElement);
+
         Element inputColumnElement = doc.createElement("InputColumn");
         dvPanelElement.appendChild(inputColumnElement);
 
-        Element textInputElement = doc.createElement("TextInput");
-        textInputElement.setAttribute("editable","true");
-        textInputElement.setAttribute("id","account");
-        textInputElement.setAttribute("label","Account");
-        textInputElement.setAttribute("value","1234");
+        for(Map.Entry<String,String> entry : inputParameters.entrySet()) {
+            Element textInputElement = doc.createElement("TextInput");
+            textInputElement.setAttribute("editable","true");
+            textInputElement.setAttribute("id",entry.getKey().trim());
+            textInputElement.setAttribute("label","&quot;"+entry.getKey().trim()+"&quot;");
+            textInputElement.setAttribute("valueType",entry.getValue());
+            textInputElement.setAttribute("value",entry.getValue());
+            inputColumnElement.appendChild(textInputElement);
+        }
 
-        inputColumnElement.appendChild(textInputElement);
-
-        writeXml(doc,System.out);
-
+        try (FileOutputStream output = new FileOutputStream("C:\\MWFBI\\billingcenter\\modules\\configuration\\config\\web\\pcf\\TestDV.pcf")) {
+            writeXml(doc, output);
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void writeXml(Document doc,
-                                 OutputStream output)
-            throws TransformerException {
+    private void writeXml(Document doc,OutputStream output) throws TransformerException {
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
@@ -106,13 +115,12 @@ public class Launcher {
 
     private void generateUIXML() {
         parseFunctionFile();
-
     }
 
     public static void main(String args []) throws ParserConfigurationException, TransformerException {
         Launcher code2UITest = new Launcher("C:\\Code2UI\\testFunction.txt");
-        //code2UITest.generateUIXML();
-        //code2UITest.generateInputParameters();
+        code2UITest.generateUIXML();
+        code2UITest.generateInputParameters();
         code2UITest.generateExecuteFunction();
     }
 }
