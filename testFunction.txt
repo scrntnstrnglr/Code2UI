@@ -1,7 +1,8 @@
-function adjustAccountUnapplied(account : String, adjustmentAmount : MonetaryAmount) {
-  gw.transaction.Transaction.runWithNewBundle(\newBundle -> {
-    account = newBundle.add(account)
-    account.DefaultUnappliedFund.makeAdjustment(new MonetaryAmount(adjustmentAmount.negate(), Currency.TC_USD))
-  },"su")
-  print("COMPLETE!")
+function adjustAccountUnapplied(accountNumber : java.lang.String, adjustmentAmount : gw.pl.currency.MonetaryAmount) {
+  var account = gw.api.database.Query.make(Account).select().AtMostOneRow
+  if(account!=null) {
+    print(" WE found the account : " + account)
+  } else {
+    print(" We could not find the account")
+  }
 }

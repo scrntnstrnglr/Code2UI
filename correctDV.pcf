@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="myScreen">
+    <Variable
+      name="accountNumberPCF"
+      type="java.lang.String"/>
+    <Variable
+      name="adjustmentAmountPCF"
+      type="gw.pl.currency.MonetaryAmount"/>
+    <Toolbar>
+      <ToolbarButton
+         action="adjustAccountUnapplied(accountNumberPCF,adjustmentAmountPCF)"
+        id="executeButton"
+        label="&quot;Execute&quot;"/>
+    </Toolbar>
+    <DetailViewPanel id="TestDV">
+      <InputColumn>
+        <TextInput editable="true" id="accountNumberPCF" label="&quot;accountNumber&quot;" value="accountNumberPCF" valueType="java.lang.String"/>
+        <MonetaryAmountInput
+          editable="true"
+          currency="Currency.TC_USD"
+          id="adjustmentAmountPCF"
+          label="&quot;adjustmentAmount&quot;"
+          value="adjustmentAmountPCF"/>
+      </InputColumn>
+    </DetailViewPanel>
+    <Code><![CDATA[
+    function adjustAccountUnapplied(accountNumber : java.lang.String, adjustmentAmount : gw.pl.currency.MonetaryAmount) {
+      var account = gw.api.database.Query.make(Account).compare(Account#AccountNumber, gw.api.database.Relop.Equals,accountNumber).select().AtMostOneRow
+      if (account != null) {
+        print(" WE found the account : " + account + "," + adjustmentAmount)
+      } else {
+        print(" We could not find the account" + "," + adjustmentAmount)
+      }
+    }]]></Code>
+  </Screen>
+</PCF>
