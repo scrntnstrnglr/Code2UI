@@ -117,7 +117,8 @@ public class Launcher {
             Element inputElement = doc.createElement(configProperties.getProperty(entry.getValue()));
             inputElement.setAttribute("editable", "true");
             inputElement.setAttribute("id", entry.getKey().trim());
-            inputElement.setAttribute("label","&quot;"+entry.getKey().trim()+"&quot;");
+            //inputElement.setAttribute("label","\u0026"+entry.getKey().trim()+"\u0026");
+            inputElement.setAttribute("label","\0022" +"sdasd"+ "\0");
             inputElement.setAttribute("value",entry.getKey());
             inputElement.setAttribute("valueType",entry.getValue());
             inputColumnElement.appendChild(inputElement);
@@ -137,7 +138,7 @@ public class Launcher {
     }
 
     private void writeXml(Document doc,OutputStream output) throws TransformerException {
-
+        
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
 
