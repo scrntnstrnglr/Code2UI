@@ -1,5 +1,5 @@
 function adjustAccountUnapplied(accountNumber : java.lang.String, adjustmentAmount : gw.pl.currency.MonetaryAmount) {
-  var account = gw.api.database.Query.make(Account).select().AtMostOneRow
+  var account = gw.api.database.Query.make(Account).compare(Account#AccountNumber, gw.api.database.Relop.Equals,accountNumber).select().AtMostOneRow
   if(account!=null) {
     print(" WE found the account : " + account)
   } else {
