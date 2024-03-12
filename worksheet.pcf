@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Worksheet
+    canEdit="true"
+    id="IssuePolicyTestWorksheet"
+    startInEditMode="true"
+    tabLabel="&quot;Issue Test Utility Trial&quot;"
+    title="&quot;Issue Test Utility Trial&quot;">
+    <Scope
+      location="*"/>
+    <Variable
+      name="testUtilityName"
+      type="TestUtilityNames_Ext"/>
+    <Screen
+      id="IssuePolicyTestScreen">
+      <Variable
+        name="accountNumber"
+        type="String"/>
+      <Variable
+        name="adjustmentAmount"
+        type="gw.pl.currency.MonetaryAmount"/>
+      <Toolbar>
+        <ToolbarButton
+          action="print(&quot;Trial&quot;)"
+          id="executeButton"
+          label="&quot;Execute&quot;"/>
+      </Toolbar>
+      <DetailViewPanel
+        id="TestDV">
+        <InputColumn>
+          <TextInput
+            editable="true"
+            id="accountNumber"
+            label="&quot;Account Number ISSUE&quot;"
+            value="accountNumber"
+            valueType="java.lang.String"/>
+          <MonetaryAmountInput
+            editable="true"
+            currency="Currency.TC_USD"
+            formatType="currency"
+            id="adjustmentAmount"
+            label="&quot;Amount ISSUE&quot;"
+            value="adjustmentAmount"
+            valueType="gw.pl.currency.MonetaryAmount"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+  </Worksheet>
+</PCF>

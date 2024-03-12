@@ -21,6 +21,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.gw.cip.FunctionParser;
 import com.gw.cip.main.ui.field.ToolbarButton;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -32,61 +33,21 @@ import javax.xml.transform.stream.StreamResult;
 
 public class Launcher {
 
-    LinkedHashMap<String, String> inputParameters = new LinkedHashMap<String,String>();
-    String functionFilePath, inputParametersAsString = "", functionBody = "", unitName = "", functionCallName = "";
+    FunctionParser functionParser;
     Properties configProperties = new Properties();
 
-    public Launcher(String functionFilePath) throws FileNotFoundException, IOException {
-        this.functionFilePath = functionFilePath;
-        System.out.println(System.getProperty("user.dir"));
-        configProperties.load(new FileInputStream(System.getProperty("user.dir") + "\\config\\field.properties"));
+    public Launcher(String functionFilePath) {
+        functionParser = new FunctionParser(functionFilePath);
     }
 
     protected void generate() throws ParserConfigurationException, TransformerException { 
-        this.generateUIXML();
-        this.generateInputParameters();
-        this.generateFunctionCallNameFromPCF();
-        this.generateExecuteFunction();
-    }
-
-    private void parseFunctionFile() {
         try{
-            File functionFile = new File(functionFilePath);
-            Scanner reader = new Scanner(functionFile);
-
-            while(reader.hasNextLine()) {
-                String data = reader.nextLine() + "\n";
-                functionBody = functionBody + data;
-                if(data.startsWith("function")) {
-                    unitName = data.substring(data.indexOf(' '),data.indexOf('(')).trim();
-                    inputParametersAsString = data.substring(data.indexOf('(')+1,data.indexOf(')')).trim();
-                }
-            }
-            System.out.println("FUNCTION BODY : ");
-            System.out.println(functionBody);
+            configProperties.load(new FileInputStream(System.getProperty("user.dir") + "\\config\\field.properties"));
         }catch(Exception e) {
-            System.out.println(e);
             e.printStackTrace();
         }
     }
 
-    private void generateInputParameters() {
-        String[] individualInputParameters = inputParametersAsString.split(",");
-        for(int i = 0; i < individualInputParameters.length ; i++) {
-            String parameter = individualInputParameters[i].trim();
-            inputParameters.put(parameter.split(":")[0].trim()+"_PCF",parameter.split(":")[1].trim());
-        }
-        System.out.println("INPUt PARAMS ");
-        for(Map.Entry<String,String> entry : inputParameters.entrySet()) {
-            System.out.println(entry.getKey() + "," + entry.getValue());
-        }
-    }
-
-    private void generateFunctionCallNameFromPCF() {
-        var inputParamList = new ArrayList<String>(inputParameters.keySet());
-        var inputParamsCommaSeparated = String.join(",", inputParamList);
-        functionCallName = unitName + "(" + inputParamsCommaSeparated + ")";
-    }
 
     private void generateExecuteFunction() throws ParserConfigurationException, TransformerException {
 
@@ -168,26 +129,6 @@ public class Launcher {
             break;
             default : inputElement.setAttribute(attributeName, "");
         }
-    }
-
-    private void writeXml(Document doc,OutputStream output) throws TransformerException {
-        
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-
-        // pretty print
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.US_ASCII.name());
-
-        DOMSource source = new DOMSource(doc);
-        StreamResult result = new StreamResult(output);
-
-        transformer.transform(source, result);
-
-    }
-
-    private void generateUIXML() {
-        parseFunctionFile();
     }
 
     public static void main(String args []) throws ParserConfigurationException, TransformerException, FileNotFoundException, IOException {
