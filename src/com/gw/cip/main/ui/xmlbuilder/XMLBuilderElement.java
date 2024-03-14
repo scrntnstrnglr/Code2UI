@@ -16,7 +16,7 @@ public class XMLBuilderElement {
 
     private String getLabel() {
         switch (this.getName()) {
-            case "ToolbarButton" : return "\"Execute\"";
+            case "ToolbarButton" : return "Execute";
             default : return this.getName();
         }
     }
@@ -24,7 +24,7 @@ public class XMLBuilderElement {
     public HashMap<String,String> getElementMap () {
         HashMap<String,String> elementMap = new HashMap<String,String>();
         elementMap.put("ELEMENT_NAME",this.getName());
-        elementMap.put("ELEMENT_LABEL",this.getLabel());
+        elementMap.put("ELEMENT_LABEL","\""+this.getLabel()+"\"");
         return elementMap;
     }
 

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.gw.cip.main.FunctionParser;
+import com.gw.cip.main.ui.xmlbuilder.XMLBuilderButton;
 import com.gw.cip.main.ui.xmlbuilder.XMLBuilderElement;
 import com.gw.cip.main.ui.xmlbuilder.XMLBuilderVariable;
 
@@ -107,15 +108,25 @@ public class AttributeValueMapBuilder {
         } */  
 
                 /**
-         * testing for toolbarbutton
+         * testing for toolbar
          
-        FunctionParser fParser = new FunctionParser("C:\\bc-ci-mvp\\Code2UI\\testFunction.txt");
-        XMLBuilderElement xmlBuilderElement = new XMLBuilderButton("ToolbarButton",fParser);
+        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement("Toolbar");
         HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement, fProperties, aProperties).load();
         for (Map.Entry<String,String> entry : rootElementAttributeMap.entrySet()) {
             System.out.println(entry.getKey() + "->" + entry.getValue());
         } */
+        
 
+                /**
+         * testing for toolbarbutton
+         
+        FunctionParser fParser = new FunctionParser("C:\\bc-ci-mvp\\Code2UI\\in\\testFunction.txt");
+        XMLBuilderElement xmlBuilderElement = new XMLBuilderButton("ToolbarButton",fParser);
+        HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement, fProperties, aProperties).load();
+        for (Map.Entry<String,String> entry : rootElementAttributeMap.entrySet()) {
+            System.out.println(entry.getKey() + "->" + entry.getValue());
+        } 
+*/
 
         /**
          * testing for DVPanel

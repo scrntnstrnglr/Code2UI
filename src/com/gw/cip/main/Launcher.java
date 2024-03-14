@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Properties;
 import com.gw.cip.main.ui.xmlbuilder.XMLBuilder;
 import com.gw.cip.main.ui.xmlbuilder.XMLBuilderConstants;
+import com.gw.cip.main.ui.xmlbuilder.XMLBuilderVariable;
+import com.gw.cip.main.ui.xmlbuilder.XMLScreenBuilder;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
@@ -24,10 +26,11 @@ public class Launcher {
     private static final String FIELD_PROPERTIES_PATH = currentWorkingDirectory + XMLBuilderConstants.FIELD_PROPERTIES_PATH;
     private static final String TYPE_PROPERTIES_PATH = currentWorkingDirectory + XMLBuilderConstants.TYPE_PROPERTIES_PATH;
     private static final String INPUT_DIRECTORY_PATH = currentWorkingDirectory + XMLBuilderConstants.INPUT_DIRETORY_PATH;
-    private String functionFilePath;
+    private String functionFilePath,pcfType;
 
-    public Launcher(String functionFilePath) throws FileNotFoundException, IOException, ParserConfigurationException, TransformerException {
+    public Launcher(String functionFilePath,String pcfType) throws FileNotFoundException, IOException, ParserConfigurationException, TransformerException {
         this.functionFilePath = functionFilePath;
+        this.pcfType = pcfType;
         init();
     }
 
@@ -43,8 +46,17 @@ public class Launcher {
     }
 
     public void generate() throws TransformerException, ParserConfigurationException {
-        XMLBuilder xmlBuilder = new XMLBuilder(this);
-        xmlBuilder.buildXML();
+        switch (this.pcfType) {
+            case "Screen" : 
+            XMLScreenBuilder xmlScreenBuilder = new XMLScreenBuilder(this);
+            xmlScreenBuilder.buildXML();
+            break;
+            case "Worksheet":
+            XMLScreenBuilder xmlWorksheetBuilder = new XMLScreenBuilder(this);
+            xmlWorksheetBuilder.buildXML();
+            break;
+            default : System.out.println("Unknown pcf type");
+        }
     }
 
     public Properties getAttributeProperties () {
@@ -63,6 +75,16 @@ public class Launcher {
         return this.functionParser;
     }
 
+    public void logDetails() {
+        System.out.println(this.functionParser.getFunctionBody());
+        System.out.println(this.functionParser.getFunctionCallName());
+        System.out.println(this.functionParser.getUnitName());
+        System.out.println(this.functionParser.getUnitName());
+        for(XMLBuilderVariable var : this.functionParser.getVariables()) {
+            System.out.println(var.getNameForPCF() + "," +  var.getType());
+        }
+    }
+
     public static void main(String args []) throws ParserConfigurationException, TransformerException, FileNotFoundException, IOException {
         try{
             File inputDirectoryPath = new File(INPUT_DIRECTORY_PATH);
@@ -71,7 +93,7 @@ public class Launcher {
                 System.out.println("No function files to parse");
             } else {
                 for(File file : filesList) {
-                    Launcher code2UITest = new Launcher(file.getAbsolutePath());
+                    Launcher code2UITest = new Launcher(file.getAbsolutePath(),"Screen");
                     code2UITest.generate();
                 }
             }

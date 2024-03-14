@@ -27,7 +27,7 @@ import com.gw.cip.main.Launcher;
 import com.gw.cip.main.ui.field.AttributeValueMapBuilder;
 import com.gw.cip.main.ui.field.XMLElement;
 
-public class XMLBuilder {
+public abstract class XMLBuilder {
 
     Properties fieldProperties, attributeProperties, typeProperties;
     FunctionParser parsedFunction;
@@ -48,80 +48,15 @@ public class XMLBuilder {
         this.functionBody = parsedFunction.getFunctionBody();
     }
 
-    public void buildXML() throws TransformerException, ParserConfigurationException {
-        createDocument();
-        buildDocumentElements();
-        writeXML();
-    }
+    protected abstract void buildDocumentElements();
 
-    private Element buildElement(String elementName) {
-        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName);
-        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement,
-                fieldProperties, attributeProperties).load();
-        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc);
-        return rootElementXMLElement.getElement();
-    }
-
-    private Element buildElement(String elementName, Element parentElement) {
-        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName);
-        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement,
-                fieldProperties, attributeProperties).load();
-        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc, parentElement);
-        return rootElementXMLElement.getElement();
-    }
-
-    private Element buildElement(String elementName, XMLBuilderVariable variable, Element parentElement) {
-        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName);
-        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement,
-                fieldProperties, attributeProperties).load(variable);
-        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc, parentElement);
-        return rootElementXMLElement.getElement();
-    }
-
-    private Element buildElement(String elementName, FunctionParser parsedFunction, Element parentElement) {
-        XMLBuilderButton xmlBuilderButton = new XMLBuilderButton("ToolbarButton", parsedFunction);
-        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderButton,
-                fieldProperties, attributeProperties).load();
-        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc, parentElement);
-        return rootElementXMLElement.getElement();
-    }
-
-    private void createDocument() throws ParserConfigurationException {
+    protected void createDocument() throws ParserConfigurationException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         doc=docBuilder.newDocument();
     }
 
-    private void buildDocumentElements() {
-    
-        // root PCF Element---------------------------------------------------------
-        Element rootElement = buildElement("PCF");
-        // screen panelElement------------------------------------------------------------
-        Element screenPanelElement = buildElement("Screen", rootElement);
-        // Variables------------------------------------------------------------------
-        for (XMLBuilderVariable variable : this.variables) {
-            buildElement("Variable", variable, screenPanelElement);
-        }
-        // toolbar-----------------------------------------------------------------------
-        Element toolbarElement = buildElement("Toolbar", parsedFunction, screenPanelElement);
-        // toolbarbutton------------------------------------------------------------------
-        Element toolbarButtoElement = buildElement("ToolbarButton", toolbarElement);
-        // detail view panel----------------------------------------------------------------
-        Element dvPanelElement = buildElement("DetailViewPanel", screenPanelElement);
-        // inputcolumn---------------------------------------------------------------------
-        Element inputColoumnelement = buildElement("InputColumn", dvPanelElement);
-        // input element-----------------------------------------------------------------
-        for (XMLBuilderVariable variable : this.variables) {
-            buildElement(typeProperties.getProperty(variable.getType()), inputColoumnelement);
-        }
-
-        Element codeElement = buildElement("Code", screenPanelElement);
-
-        CDATASection codeSection = doc.createCDATASection(functionBody);
-        codeElement.appendChild(codeSection);
-    }
-
-    private void writeXML() throws TransformerException {
+    protected void writeXML() throws TransformerException {
         try (FileOutputStream output = new FileOutputStream(XMLBuilderConstants.PCF_FILE_OUTPUT_PATH)) {
             writeXML(doc, output);
         } catch (IOException e) {

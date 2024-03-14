@@ -8,8 +8,8 @@ import com.gw.cip.main.ui.xmlbuilder.XMLBuilderVariable;
 
 public class FunctionParser {
 
-    String functionFilePath, inputParametersAsString = "", functionBody = "", unitName = "", functionCallName = "";
-    LinkedList<XMLBuilderVariable> functionVariables = new LinkedList<XMLBuilderVariable>();
+    private String functionFilePath, inputParametersAsString = "", functionBody = "", unitName = "", functionCallName = "";
+    private LinkedList<XMLBuilderVariable> functionVariables = new LinkedList<XMLBuilderVariable>();
 
     public FunctionParser(String functionFilePath) {
         this.functionFilePath = functionFilePath;
@@ -35,6 +35,7 @@ public class FunctionParser {
                     inputParametersAsString = data.substring(data.indexOf('(')+1,data.indexOf(')')).trim();
                 }
             }
+            reader.close();
         }catch(Exception e) {
             e.printStackTrace();
         }
