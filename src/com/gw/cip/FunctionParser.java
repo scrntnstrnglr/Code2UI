@@ -1,17 +1,13 @@
 package com.gw.cip;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class FunctionParser {
 
     String functionFilePath, inputParametersAsString = "", functionBody = "", unitName = "", functionCallName = "";
-    ArrayList<Variable> functionVariables = new ArrayList<Variable>();
+    LinkedList<XMLBuilderVariable> functionVariables = new LinkedList<XMLBuilderVariable>();
 
     public FunctionParser(String functionFilePath) {
         this.functionFilePath = functionFilePath;
@@ -46,23 +42,25 @@ public class FunctionParser {
         String[] individualInputParameters = inputParametersAsString.split(",");
         for(int i = 0; i < individualInputParameters.length ; i++) {
             String parameter = individualInputParameters[i].trim();
-            Variable variable = new Variable(parameter.split(":")[0].trim(), parameter.split(":")[1].trim());
+            XMLBuilderVariable variable = new XMLBuilderVariable(parameter.split(":")[0].trim(), parameter.split(":")[1].trim());
             functionVariables.add(variable);
         }
     }
 
-
-    ////use string join to append!!!
-
     private void generateFunctionCallNameFromPCF() {
         functionCallName = unitName + "(";
-        for(Variable var : this.functionVariables) {
-            functionCallName += var.getName()
+        String variableNames = "";
+        for(XMLBuilderVariable var : this.functionVariables) {
+            if(variableNames.isEmpty()){
+                variableNames=String.join(",",var.getNameForPCF());
+            } else {
+                variableNames=String.join(",",variableNames,var.getNameForPCF());
+            }
         }
-        functionCallName = unitName + "(" + inputParamsCommaSeparated + ")";
+        functionCallName = unitName + "(" + variableNames +")";
     }
 
-    public ArrayList<Variable> getVariables() {
+    public LinkedList<XMLBuilderVariable> getVariables() {
         return this.functionVariables;
     }
 
@@ -76,5 +74,16 @@ public class FunctionParser {
 
     public String getUnitName () {
         return this.unitName;
+    }
+
+    public static void main (String args[]) {
+        var fParser = new FunctionParser("C:\\bc-ci-mvp\\Code2UI\\testFunction.txt");
+        System.out.println("Variables : ");
+        for(XMLBuilderVariable var : fParser.getVariables()) {
+            System.out.println(var.getName() + "," + var.getType());
+        }
+        System.out.println("Function body : \n" + fParser.getFunctionBody());
+        System.out.println("Function call name : " + fParser.getFunctionCallName());
+        System.out.println("Unit name : " + fParser.getUnitName());;
     }
 }

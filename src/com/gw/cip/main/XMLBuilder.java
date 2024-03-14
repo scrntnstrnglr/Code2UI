@@ -6,11 +6,14 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -23,75 +26,60 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.gw.cip.FunctionParser;
+import com.gw.cip.Variable;
+import com.gw.cip.XMLBuilderElement;
+import com.gw.cip.XMLBuilderVariable;
 import com.gw.cip.main.ui.field.AttributeValueMapBuilder;
 import com.gw.cip.main.ui.field.ToolbarButton;
 import com.gw.cip.main.ui.field.XMLElement;
 
 public class XMLBuilder {
 
-    Properties fieldProperties, attributeProperties;
+    Properties fieldProperties, attributeProperties, typeProperties;
     FunctionParser parsedFunction;
     Document doc;
 
-    public XMLBuilder (Properties fieldProperties, Properties attributeProperties, FunctionParser parsedFunction) {
-        this.fieldProperties = fieldProperties;
-        this.attributeProperties = attributeProperties;
-        this.parsedFunction = parsedFunction;
+    public XMLBuilder (Launcher uiBuilder) {
+        this.fieldProperties = uiBuilder.getFieldProperties();
+        this.attributeProperties = uiBuilder.getAttributeProperties();
+        this.typeProperties = uiBuilder.getTypeProperties();
+        this.parsedFunction = uiBuilder.getParsedFunction();
     }
 
-    public void buildXML () {
+    public void buildXML () throws TransformerException, ParserConfigurationException {
         
-        LinkedHashMap<String,String> inputParameters = parsedFunction.getInputParameters();
+        LinkedList<XMLBuilderVariable> variables = parsedFunction.getVariables();
         String functionBody = parsedFunction.getFunctionBody();
 
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        doc = docBuilder.newDocument();
+        doc = createDocument();
 
         // root PCF Element--------------------------------------------------------------------------------------------
         Element rootElement = buildElement("PCF");
         // screen panelElement--------------------------------------------------------------------------------------------
         Element screenPanelElement = buildElement("Screen", rootElement);
         // Variables--------------------------------------------------------------------------------------------
-        Element variableElement = buildElement("Variable",screenPanelElement);
+        for(XMLBuilderVariable variable : variables) {
+            buildElement("Variable",variable,screenPanelElement);
+        }
         // toolbar--------------------------------------------------------------------------------------------
-        Element toolbarElement = buildElement("Toolbar",screenPanelElement);
+        Element toolbarElement = buildElement("Toolbar",parsedFunction,screenPanelElement);
         // toolbar button--------------------------------------------------------------------------------------------
         Element toolbarButtoElement = buildElement("ToolbarButton",toolbarElement);
-
-        Element toolbarButtonElement = doc.createElement("ToolbarButton");
-        ToolbarButton toolbarButton = new ToolbarButton(properties.getProperty("ToolbarButton"),toolbarButtonElement);
-       /** toolbarButtonElement.setAttribute("id", "executeButton");  //add function name and function call
-        toolbarButtonElement.setAttribute("label", "\"Execute\"");
-        toolbarButtonElement.setAttribute("action",functionCallName ); */
-        toolbarElement.appendChild(toolbarButtonElement);
-
-        Element dvPanelElement = doc.createElement("DetailViewPanel");
-        dvPanelElement.setAttribute("id","TestDV");
-        screenPanelElement.appendChild(dvPanelElement);
-
-        Element inputColumnElement = doc.createElement("InputColumn");
-        dvPanelElement.appendChild(inputColumnElement);
-
-        for(Map.Entry<String,String> entry : inputParameters.entrySet()) {
-            String uiInputFieldConfig = properties.getProperty(entry.getValue());
-            String[] uiInputFieldNameAndProperties = uiInputFieldConfig.split(",");
-            String uiInputField = uiInputFieldNameAndProperties[0];
-            Element inputElement = doc.createElement(uiInputField);
-            for(int i=1;i<uiInputFieldNameAndProperties.length;i++) {
-                String attributeName = uiInputFieldNameAndProperties[i];
-                setAttribute(attributeName,entry,inputElement);
-            }
-            inputColumnElement.appendChild(inputElement);
+        // detail view panel--------------------------------------------------------------------------------------------
+        Element dvPanelElement = buildElement("DetailViewPanel",screenPanelElement);
+        // input column--------------------------------------------------------------------------------------------
+        Element inputColoumnelement = buildElement("InputColumn",dvPanelElement);
+        // input element--------------------------------------------------------------------------------------------
+        for(XMLBuilderVariable variable : variables) {
+            buildElement(typeProperties.getProperty(variable.getType()),inputColoumnelement);
         }
 
-        Element codeElement = doc.createElement("Code");
-        screenPanelElement.appendChild(codeElement);
+        Element codeElement = buildElement("Code",screenPanelElement);
 
         CDATASection codeSection = doc.createCDATASection(functionBody);
         codeElement.appendChild(codeSection);
     
-        try (FileOutputStream output = new FileOutputStream("C:\\MWFBI\\billingcenter\\modules\\configuration\\config\\web\\pcf\\myScreen.pcf")) {
+        try (FileOutputStream output = new FileOutputStream(XMLBuilderConstants.PCF_FILE_OUTPUT_PATH)) {
             writeXml(doc, output);
         }catch (IOException e) {
             e.printStackTrace();
@@ -99,15 +87,38 @@ public class XMLBuilder {
     }
 
     private Element buildElement(String elementName) {
-        HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(elementName, fieldProperties, attributeProperties).load();
+        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName);
+        HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement, fieldProperties, attributeProperties).load();
         XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc);
         return rootElementXMLElement.getElement();
     }
 
     private Element buildElement(String elementName, Element parentElement) {
-        HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(elementName, fieldProperties, attributeProperties).load();
+        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName);
+        HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement, fieldProperties, attributeProperties).load();
         XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc,parentElement);
         return rootElementXMLElement.getElement();
+    }
+
+    private Element buildElement(String elementName, XMLBuilderVariable variable, Element parentElement) {
+        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName);
+        HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement, fieldProperties, attributeProperties).load(variable);
+        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc,parentElement);
+        return rootElementXMLElement.getElement();
+    }
+
+    private Element buildElement(String elementName, FunctionParser parsedFunction, Element parentElement) {
+        XMLBuilderButton xmlBuilderButton = new XMLBuilderButton("ToolbarButton",parsedFunction);
+        HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderButton, fieldProperties, attributeProperties).load();
+        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc,parentElement);
+        return rootElementXMLElement.getElement();
+    }
+
+    private Document createDocument() throws ParserConfigurationException {
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+        return docBuilder.newDocument();
+
     }
 
     private void writeXml(Document doc,OutputStream output) throws TransformerException {

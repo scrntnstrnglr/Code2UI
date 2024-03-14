@@ -1,6 +1,8 @@
 package com.gw.cip.main.ui.field;
 
-public class ToolbarButton extends Element{
+import com.gw.cip.XMLBuilderElement;
+
+public class ToolbarButton extends XMLBuilderElement{
 
 
     public ToolbarButton(String attributeNames, org.w3c.dom.Element xmlElement) {
