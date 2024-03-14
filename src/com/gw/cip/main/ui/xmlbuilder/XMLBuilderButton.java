@@ -1,9 +1,8 @@
-package com.gw.cip.main;
+package com.gw.cip.main.ui.xmlbuilder;
 
 import java.util.HashMap;
 
-import com.gw.cip.FunctionParser;
-import com.gw.cip.XMLBuilderElement;
+import com.gw.cip.main.FunctionParser;
 
 public class XMLBuilderButton extends XMLBuilderElement {
 

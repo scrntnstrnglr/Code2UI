@@ -1,4 +1,4 @@
-package com.gw.cip.main;
+package com.gw.cip.main.ui.xmlbuilder;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,9 +22,8 @@ import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.gw.cip.FunctionParser;
-import com.gw.cip.XMLBuilderElement;
-import com.gw.cip.XMLBuilderVariable;
+import com.gw.cip.main.FunctionParser;
+import com.gw.cip.main.Launcher;
 import com.gw.cip.main.ui.field.AttributeValueMapBuilder;
 import com.gw.cip.main.ui.field.XMLElement;
 
@@ -50,7 +49,6 @@ public class XMLBuilder {
     }
 
     public void buildXML() throws TransformerException, ParserConfigurationException {
-
         createDocument();
         buildDocumentElements();
         writeXML();
@@ -145,7 +143,6 @@ public class XMLBuilder {
         transformer.transform(source, result);
 
     }
-
     
     public Document getDocument () {
         return this.doc;

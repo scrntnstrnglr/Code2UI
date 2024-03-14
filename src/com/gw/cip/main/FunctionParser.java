@@ -1,8 +1,10 @@
-package com.gw.cip;
+package com.gw.cip.main;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Scanner;
+
+import com.gw.cip.main.ui.xmlbuilder.XMLBuilderVariable;
 
 public class FunctionParser {
 

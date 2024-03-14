@@ -1,6 +1,8 @@
-package com.gw.cip.main;
+package com.gw.cip.main.ui.xmlbuilder;
 
 public class XMLBuilderConstants {
+
+    public static final String INPUT_DIRETORY_PATH = "\\in";
 
     public static final String ATTRIBUTE_PROPERTIES_PATH = "\\config\\attribute.properties";
 

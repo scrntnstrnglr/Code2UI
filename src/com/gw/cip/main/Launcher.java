@@ -1,10 +1,13 @@
 package com.gw.cip.main;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
-import com.gw.cip.FunctionParser;
+import com.gw.cip.main.ui.xmlbuilder.XMLBuilder;
+import com.gw.cip.main.ui.xmlbuilder.XMLBuilderConstants;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 
@@ -20,6 +23,7 @@ public class Launcher {
     private static final String ATTRIBUTES_PROPERTIES_PATH = currentWorkingDirectory + XMLBuilderConstants.ATTRIBUTE_PROPERTIES_PATH;
     private static final String FIELD_PROPERTIES_PATH = currentWorkingDirectory + XMLBuilderConstants.FIELD_PROPERTIES_PATH;
     private static final String TYPE_PROPERTIES_PATH = currentWorkingDirectory + XMLBuilderConstants.TYPE_PROPERTIES_PATH;
+    private static final String INPUT_DIRECTORY_PATH = currentWorkingDirectory + XMLBuilderConstants.INPUT_DIRETORY_PATH;
     private String functionFilePath;
 
     public Launcher(String functionFilePath) throws FileNotFoundException, IOException, ParserConfigurationException, TransformerException {
@@ -60,7 +64,19 @@ public class Launcher {
     }
 
     public static void main(String args []) throws ParserConfigurationException, TransformerException, FileNotFoundException, IOException {
-        Launcher code2UITest = new Launcher("C:\\bc-ci-mvp\\Code2UI\\testFunction.txt");
-        code2UITest.generate();
+        try{
+            File inputDirectoryPath = new File(INPUT_DIRECTORY_PATH);
+            File filesList[] = inputDirectoryPath.listFiles();
+            if(filesList.length == 0) {
+                System.out.println("No function files to parse");
+            } else {
+                for(File file : filesList) {
+                    Launcher code2UITest = new Launcher(file.getAbsolutePath());
+                    code2UITest.generate();
+                }
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 }

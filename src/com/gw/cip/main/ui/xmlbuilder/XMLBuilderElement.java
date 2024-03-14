@@ -1,4 +1,4 @@
-package com.gw.cip;
+package com.gw.cip.main.ui.xmlbuilder;
 
 import java.util.HashMap;
 

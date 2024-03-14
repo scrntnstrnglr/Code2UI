@@ -8,11 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import com.gw.cip.FunctionParser;
-import com.gw.cip.XMLBuilderElement;
-import com.gw.cip.XMLBuilderVariable;
-import com.gw.cip.main.XMLBuilderButton;
-import com.gw.cip.main.XMLBuilderConstants;
+import com.gw.cip.main.FunctionParser;
+import com.gw.cip.main.ui.xmlbuilder.XMLBuilderElement;
+import com.gw.cip.main.ui.xmlbuilder.XMLBuilderVariable;
 
 public class AttributeValueMapBuilder {
 
