@@ -8,7 +8,7 @@ public class XMLBuilderButton extends XMLBuilderElement {
 
     FunctionParser fParser;
     public XMLBuilderButton(String name, FunctionParser fParser) {
-        super(name);
+        super(name,fParser);
         this.fParser = fParser;
     }
 

@@ -2,12 +2,14 @@ package com.gw.cip.main.ui.xmlbuilder;
 
 import java.util.HashMap;
 
+import com.gw.cip.main.FunctionParser;
+
 public class XMLBuilderVariable extends XMLBuilderElement {
 
     
     String type;
-    public XMLBuilderVariable(String name, String type) {
-        super(name);
+    public XMLBuilderVariable(String name, String type, FunctionParser fParser) {
+        super(name,fParser);
         this.type = type;
     }
 

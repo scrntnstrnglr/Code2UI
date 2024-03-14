@@ -18,7 +18,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -48,6 +47,12 @@ public abstract class XMLBuilder {
         this.functionBody = parsedFunction.getFunctionBody();
     }
 
+    protected void buildXML () throws ParserConfigurationException, TransformerException {
+        this.createDocument();
+        this.buildDocumentElements();
+        this.writeXML();
+    }
+
     protected abstract void buildDocumentElements();
 
     protected void createDocument() throws ParserConfigurationException {
@@ -62,6 +67,41 @@ public abstract class XMLBuilder {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    protected Element buildElement(String elementName) {
+        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName,parsedFunction);
+        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement,
+                fieldProperties, attributeProperties).load();
+        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc);
+        return rootElementXMLElement.getElement();
+    }
+
+    protected Element buildElement(String elementName, Element parentElement) {
+        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName,parsedFunction);
+        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement,
+                fieldProperties, attributeProperties).load();
+        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc, parentElement);
+        return rootElementXMLElement.getElement();
+    }
+
+    //this is for the Variable element, not for variables inside the inputcolumn
+    protected Element buildElement(String elementName, XMLBuilderVariable variable, Element parentElement) {
+        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName,parsedFunction);
+        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement,
+                fieldProperties, attributeProperties).load(variable);
+        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc, parentElement);
+        return rootElementXMLElement.getElement();
+    }
+
+
+
+    protected Element buildElement(String elementName, FunctionParser parsedFunction, Element parentElement) {
+        XMLBuilderButton xmlBuilderButton = new XMLBuilderButton(elementName, parsedFunction);
+        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderButton,
+                fieldProperties, attributeProperties).load();
+        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc, parentElement);
+        return rootElementXMLElement.getElement();
     }
 
     private void writeXML(Document doc, OutputStream output) throws TransformerException {

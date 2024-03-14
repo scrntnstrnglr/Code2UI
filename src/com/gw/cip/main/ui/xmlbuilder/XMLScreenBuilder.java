@@ -27,16 +27,17 @@ import com.gw.cip.main.ui.field.XMLElement;
 
 public class XMLScreenBuilder extends XMLBuilder {
 
+    Element screenPanelElement;
     public XMLScreenBuilder(Launcher uiBuilder) {
         super(uiBuilder);
     }
     
+    @Override
     public void buildXML() throws TransformerException, ParserConfigurationException {
-        super.createDocument();
-        buildDocumentElements();
-        super.writeXML();
+        super.buildXML();
     }
 
+    @Override
      protected void buildDocumentElements() {
     
         // root PCF Element---------------------------------------------------------
@@ -66,36 +67,9 @@ public class XMLScreenBuilder extends XMLBuilder {
         codeElement.appendChild(codeSection);
     }
 
-    private Element buildElement(String elementName) {
-        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName);
-        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement,
-                fieldProperties, attributeProperties).load();
-        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc);
-        return rootElementXMLElement.getElement();
+    public Element getScreenPanelElement () {
+        return this.screenPanelElement;
     }
 
-    private Element buildElement(String elementName, Element parentElement) {
-        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName);
-        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement,
-                fieldProperties, attributeProperties).load();
-        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc, parentElement);
-        return rootElementXMLElement.getElement();
-    }
-
-    private Element buildElement(String elementName, XMLBuilderVariable variable, Element parentElement) {
-        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement(elementName);
-        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement,
-                fieldProperties, attributeProperties).load(variable);
-        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc, parentElement);
-        return rootElementXMLElement.getElement();
-    }
-
-    private Element buildElement(String elementName, FunctionParser parsedFunction, Element parentElement) {
-        XMLBuilderButton xmlBuilderButton = new XMLBuilderButton("ToolbarButton", parsedFunction);
-        HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderButton,
-                fieldProperties, attributeProperties).load();
-        XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc, parentElement);
-        return rootElementXMLElement.getElement();
-    }
 
 }

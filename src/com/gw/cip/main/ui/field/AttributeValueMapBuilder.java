@@ -94,7 +94,24 @@ public class AttributeValueMapBuilder {
         for (Map.Entry<String,String> entry : rootElementAttributeMap.entrySet()) {
             System.out.println(entry.getKey() + "->" + entry.getValue());
         } */
+
+                /**
+         * testing for Worksheet
+        FunctionParser fParser = new FunctionParser("C:\\bc-ci-mvp\\Code2UI\\in\\testFunction.txt");
+        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement("Worksheet",fParser);
+        HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement, fProperties, aProperties).load();
+        for (Map.Entry<String,String> entry : rootElementAttributeMap.entrySet()) {
+            System.out.println(entry.getKey() + "->" + entry.getValue());
+        } */
         
+                        /**
+         * testing for scope
+        FunctionParser fParser = new FunctionParser("C:\\bc-ci-mvp\\Code2UI\\in\\testFunction.txt");
+        XMLBuilderElement xmlBuilderElement = new XMLBuilderElement("Scope",fParser);
+        HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderElement, fProperties, aProperties).load();
+        for (Map.Entry<String,String> entry : rootElementAttributeMap.entrySet()) {
+            System.out.println(entry.getKey() + "->" + entry.getValue());
+        } */
         
         
        /**  testing for Variables 

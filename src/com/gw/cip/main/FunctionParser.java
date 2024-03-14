@@ -45,7 +45,7 @@ public class FunctionParser {
         String[] individualInputParameters = inputParametersAsString.split(",");
         for(int i = 0; i < individualInputParameters.length ; i++) {
             String parameter = individualInputParameters[i].trim();
-            XMLBuilderVariable variable = new XMLBuilderVariable(parameter.split(":")[0].trim(), parameter.split(":")[1].trim());
+            XMLBuilderVariable variable = new XMLBuilderVariable(parameter.split(":")[0].trim(), parameter.split(":")[1].trim(),this);  //change this to send only the function parser!
             functionVariables.add(variable);
         }
     }

@@ -2,12 +2,16 @@ package com.gw.cip.main.ui.xmlbuilder;
 
 import java.util.HashMap;
 
+import com.gw.cip.main.FunctionParser;
+
 public class XMLBuilderElement {
 
     String name;
 
-    public XMLBuilderElement(String name) {
+    FunctionParser parsedFunction;
+    public XMLBuilderElement(String name, FunctionParser parsedFunction) {
         this.name=name;
+        this.parsedFunction = parsedFunction;
     }
 
     public String getName() {
@@ -25,6 +29,7 @@ public class XMLBuilderElement {
         HashMap<String,String> elementMap = new HashMap<String,String>();
         elementMap.put("ELEMENT_NAME",this.getName());
         elementMap.put("ELEMENT_LABEL","\""+this.getLabel()+"\"");
+        elementMap.put("UNIT_NAME","\""+this.parsedFunction.getUnitName()+"\"");
         return elementMap;
     }
 

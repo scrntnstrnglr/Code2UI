@@ -14,5 +14,9 @@ public class XMLBuilderConstants {
 
     public static final String PCF_FILE_OUTPUT_PATH = "C:\\bc-ci-mvp\\Code2UI\\testingScreen.pcf";
 
+    public static final String WORKSHEET_TYPELIST_NAME = "testingUtilityName";
+
+    public static final String WORKSHEET_TYPELIST_TYPE = "TestUtilityNames_Ext";
+
 }
 
