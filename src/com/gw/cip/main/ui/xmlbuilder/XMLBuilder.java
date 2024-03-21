@@ -28,17 +28,20 @@ import com.gw.cip.main.ui.field.XMLElement;
 
 public abstract class XMLBuilder {
 
+    Launcher uiBuilder;
     Properties fieldProperties, attributeProperties, typeProperties;
     FunctionParser parsedFunction;
     Document doc;
     LinkedList<XMLBuilderVariable> variables = new LinkedList<XMLBuilderVariable>();
-    String functionBody;
+    String functionBody,outputDirectoryPath;
 
     public XMLBuilder(Launcher uiBuilder) {
+        this.uiBuilder = uiBuilder;
         this.fieldProperties = uiBuilder.getFieldProperties();
         this.attributeProperties = uiBuilder.getAttributeProperties();
         this.typeProperties = uiBuilder.getTypeProperties();
         this.parsedFunction = uiBuilder.getParsedFunction();
+        this.outputDirectoryPath = uiBuilder.getOutputPath();
         init();
     }
 
@@ -47,7 +50,7 @@ public abstract class XMLBuilder {
         this.functionBody = parsedFunction.getFunctionBody();
     }
 
-    protected void buildXML () throws ParserConfigurationException, TransformerException {
+    public void buildXML () throws ParserConfigurationException, TransformerException {
         this.createDocument();
         this.buildDocumentElements();
         this.writeXML();
@@ -62,7 +65,19 @@ public abstract class XMLBuilder {
     }
 
     protected void writeXML() throws TransformerException {
-        try (FileOutputStream output = new FileOutputStream(XMLBuilderConstants.PCF_FILE_OUTPUT_PATH)) {
+        try (FileOutputStream output = new FileOutputStream(this.outputDirectoryPath)) {
+            writeXML(doc, output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Launcher getUIBuilder() {
+        return this.uiBuilder;
+    }
+
+    protected void writeXML(String outputFile, Document doc) throws TransformerException {
+        try (FileOutputStream output = new FileOutputStream(outputFile)) {
             writeXML(doc, output);
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,13 +110,26 @@ public abstract class XMLBuilder {
     }
 
 
-
     protected Element buildElement(String elementName, FunctionParser parsedFunction, Element parentElement) {
         XMLBuilderButton xmlBuilderButton = new XMLBuilderButton(elementName, parsedFunction);
         HashMap<String, String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderButton,
                 fieldProperties, attributeProperties).load();
         XMLElement rootElementXMLElement = new XMLElement(rootElementAttributeMap, elementName, doc, parentElement);
         return rootElementXMLElement.getElement();
+    }
+
+    private Element buildWorkSheetVariableElement(String elementName, Element parentElement) {
+        XMLBuilderWorksheetVariable xmlBuilderWorksheetVariable = new XMLBuilderWorksheetVariable(elementName, this.parsedFunction);
+        HashMap<String,String> elementAttributeMap = new AttributeValueMapBuilder(xmlBuilderWorksheetVariable, fieldProperties, attributeProperties).load();
+        XMLElement variableElement = new XMLElement(elementAttributeMap, elementName, doc,parentElement);
+        return variableElement.getElement();
+    }
+    
+    protected Element buildElement(String elementName, String elementType, Element parentElement) {
+        switch(elementType) {
+            case "WorksheetVariable" : return buildWorkSheetVariableElement(elementName,parentElement);
+            default : return buildElement(elementName,parentElement);
+        }
     }
 
     private void writeXML(Document doc, OutputStream output) throws TransformerException {

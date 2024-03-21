@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?>
+<PCF xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+    <Worksheet canEdit="true" id="Worksheet" startInEditMode="true" tabLabel="&quot;adjustAccountUnapplied&quot;" title="&quot;adjustAccountUnapplied&quot;">
+        <Scope location="*"/>
+        <Variable name="testingUtilityName" type="TestUtilityNames_Ext"/>
+        <Screen id="Screen">
+            <Variable name="accountNumber_PCF" type="java.lang.String"/>
+            <Variable name="adjustmentAmount_PCF" type="gw.pl.currency.MonetaryAmount"/>
+            <Toolbar>
+                <ToolbarButton action="adjustAccountUnapplied(accountNumber_PCF,adjustmentAmount_PCF)" id="ToolbarButton" label="&quot;Execute&quot;"/>
+            </Toolbar>
+            <DetailViewPanel id="DetailViewPanel">
+                <InputColumn>
+                    <TextInput editable="true" id="accountNumber" label="&quot;accountNumber&quot;" value="accountNumber_PCF" valueType="java.lang.String"/>
+                    <MonetaryAmountInput currency="Currency.TC_USD" editable="true" id="adjustmentAmount" label="&quot;adjustmentAmount&quot;" value="adjustmentAmount_PCF" valueType="gw.pl.currency.MonetaryAmount"/>
+                </InputColumn>
+            </DetailViewPanel>
+            <Code>
+                <![CDATA[function adjustAccountUnapplied(accountNumber : java.lang.String, adjustmentAmount : gw.pl.currency.MonetaryAmount) {
+  var account = gw.api.database.Query.make(Account).compare(Account#AccountNumber, gw.api.database.Relop.Equals,accountNumber).select().AtMostOneRow
+  if(account!=null) {
+    print(" WE found the account : " + account)
+  } else {
+    print(" We could not find the account")
+  }
+}
+]]>
+            </Code>
+        </Screen>
+    </Worksheet>
+</PCF>

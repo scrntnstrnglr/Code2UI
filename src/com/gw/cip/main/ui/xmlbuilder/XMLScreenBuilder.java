@@ -1,11 +1,5 @@
 package com.gw.cip.main.ui.xmlbuilder;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,7 +33,7 @@ public class XMLScreenBuilder extends XMLBuilder {
 
     @Override
      protected void buildDocumentElements() {
-    
+      System.out.println("Screen panel element build called!!");
         // root PCF Element---------------------------------------------------------
         Element rootElement = buildElement("PCF");
         // screen panelElement------------------------------------------------------------

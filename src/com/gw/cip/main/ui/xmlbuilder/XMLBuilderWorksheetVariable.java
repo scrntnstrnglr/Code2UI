@@ -4,25 +4,24 @@ import java.util.HashMap;
 
 import com.gw.cip.main.FunctionParser;
 
-public class XMLBuilderWorksheetVariable extends XMLBuilderVariable {
+public class XMLBuilderWorksheetVariable extends XMLBuilderElement {
 
-    public XMLBuilderWorksheetVariable(String name, String type, FunctionParser fParser) {
-        super(name, type, fParser);
+    public XMLBuilderWorksheetVariable(String name, FunctionParser fParser) {
+        super(name,fParser);
         //TODO Auto-generated constructor stub
     }
 
-    public String getName() {
-        return XMLBuilderConstants.WORKSHEET_TYPELIST_NAME;
+    private String getType() {
+        return XMLBuilderConstants.WORKSHEET_TYPELIST_TYPE;
     }
 
-    @Override
-    public String getType() {
-        return XMLBuilderConstants.WORKSHEET_TYPELIST_TYPE;
+    private String getValueName() {
+        return XMLBuilderConstants.WORKSHEET_TYPELIST_NAME;
     }
 
         public HashMap<String,String> getElementMap () {
         HashMap<String,String> variableMap = new HashMap<String,String>(super.getElementMap());
-        variableMap.put("VARIABLE_NAME", this.getName());
+        variableMap.put("VARIABLE_NAME", this.getValueName());
         variableMap.put("VARIABLE_TYPE", this.getType());
         return variableMap;
     }

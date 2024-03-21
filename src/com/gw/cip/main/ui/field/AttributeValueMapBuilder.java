@@ -12,6 +12,7 @@ import com.gw.cip.main.FunctionParser;
 import com.gw.cip.main.ui.xmlbuilder.XMLBuilderButton;
 import com.gw.cip.main.ui.xmlbuilder.XMLBuilderElement;
 import com.gw.cip.main.ui.xmlbuilder.XMLBuilderVariable;
+import com.gw.cip.main.ui.xmlbuilder.XMLBuilderWorksheetVariable;
 
 public class AttributeValueMapBuilder {
 
@@ -42,6 +43,8 @@ public class AttributeValueMapBuilder {
                     }
                 } 
             }
+        } else {
+            System.out.println(" No field properties found!");
         }
         return attributeValueMap;
     }
@@ -174,6 +177,14 @@ public class AttributeValueMapBuilder {
             } 
         }    */
 
+                       /**  testing for XMLWOrksheet Variable*/
+        FunctionParser fParser = new FunctionParser("C:\\bc-ci-mvp\\Code2UI\\in\\testFunction.txt");
+          XMLBuilderWorksheetVariable xmlBuilderWorksheetVariable = new XMLBuilderWorksheetVariable("Variable",fParser);
+            HashMap<String,String> rootElementAttributeMap = new AttributeValueMapBuilder(xmlBuilderWorksheetVariable, fProperties, aProperties).load();
+            System.out.println(rootElementAttributeMap.size()); 
+            for (Map.Entry<String,String> entry : rootElementAttributeMap.entrySet()) {
+                System.out.println(entry.getKey() + "->" + entry.getValue());
+            } 
     }
     
 }
