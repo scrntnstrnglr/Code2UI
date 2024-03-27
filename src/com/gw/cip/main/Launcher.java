@@ -72,6 +72,7 @@ public class Launcher {
     //updates the typelist to include the new utility
     private void updateTypeList() {
         try {
+            //TO-DO : if the type list is not present, make it from scratch
             XMLParser xmlParser = new XMLParser(this);
             xmlParser.buildXML();
         } catch (ParserConfigurationException | TransformerException e) {
