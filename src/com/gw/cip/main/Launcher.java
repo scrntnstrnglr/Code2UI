@@ -6,14 +6,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import com.gw.FileLogger;
 import com.gw.cip.main.ui.xmlbuilder.XMLBuilderConstants;
-import com.gw.cip.main.ui.xmlbuilder.XMLBuilderVariable;
 import com.gw.cip.main.ui.xmlbuilder.XMLScreenBuilder;
 import com.gw.cip.main.ui.xmlbuilder.XMLWorksheetBuilder;
 import com.gw.xml.parse.XMLParser;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Launcher {
 
@@ -30,6 +33,8 @@ public class Launcher {
     private static final String TYPE_PROPERTIES_PATH = currentWorkingDirectory + XMLBuilderConstants.TYPE_PROPERTIES_PATH;
     private static final String RUNTIME_PROPERTIES_PATH = currentWorkingDirectory + XMLBuilderConstants.RUNTIME_PROPERTIES_PATH;
     private String functionFilePath,pcfType;
+
+    public static Logger logger;
 
     public Launcher(String functionFilePath,String pcfType) throws FileNotFoundException, IOException, ParserConfigurationException, TransformerException {
         this.functionFilePath = functionFilePath;
@@ -60,7 +65,7 @@ public class Launcher {
             XMLWorksheetBuilder xmlWorksheetBuilder = new XMLWorksheetBuilder(this);
             xmlWorksheetBuilder.buildXML();
             break;
-            default : System.out.println("Unknown pcf type");
+            default : logger.info("Unknown pcf type");
         }
     }
 
@@ -111,15 +116,6 @@ public class Launcher {
         return runtimeProperties.getProperty("TypeList");
     }
 
-    public void logDetails() {
-        System.out.println(this.functionParser.getFunctionBody());
-        System.out.println(this.functionParser.getFunctionCallName());
-        System.out.println(this.functionParser.getUnitName());
-        System.out.println(this.functionParser.getUnitName());
-        for(XMLBuilderVariable var : this.functionParser.getVariables()) {
-            System.out.println(var.getNameForPCF() + "," +  var.getType());
-        }
-    }
 
     public static void main(String args []) throws ParserConfigurationException, TransformerException, FileNotFoundException, IOException {
         try{
@@ -127,17 +123,21 @@ public class Launcher {
             runTimeConfigurationProperties.load(new FileInputStream(RUNTIME_PROPERTIES_PATH));
             File inputDirectoryPath = new File(runTimeConfigurationProperties.getProperty("InputDirectoryPath"));
             System.out.println(inputDirectoryPath);
+            FileLogger fileLogger = new FileLogger(runTimeConfigurationProperties);
+            logger = fileLogger.getLogger();
             File filesList[] = inputDirectoryPath.listFiles();
-            if(filesList.length == 0) {
-                System.out.println("No function files to parse");
+            if(filesList.length==0) {
+                logger.info("No files to parse");
             } else {
                 for(File file : filesList) {
+                    logger.info("Working on - " + file.getAbsolutePath());
                     Launcher code2UITest = new Launcher(file.getAbsolutePath(),"Worksheet");
                     code2UITest.generate();
                 }
             }
         }catch(Exception e) {
             e.printStackTrace();
+            logger.log(Level.ALL, "Exception occured", e);
         }
     }
 }
