@@ -98,7 +98,7 @@ public class Launcher {
     }
 
     public String getOutputPath() {
-        return runtimeProperties.getProperty("OutputDirectoryPath");
+        return runtimeProperties.getProperty("OutputDirectoryPath")+"\\"+this.functionParser.getPCFFileName()+".pcf";
     }
 
     public String getBillingCenterPath(){

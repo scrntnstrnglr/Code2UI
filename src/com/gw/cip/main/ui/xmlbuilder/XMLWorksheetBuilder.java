@@ -50,7 +50,7 @@ public class XMLWorksheetBuilder extends XMLBuilder {
             buildElement(typeProperties.getProperty(variable.getType()),variable, inputColoumnelement);
         }
 
-        Element codeElement = buildElement("Code", screenPanelElement);
+        Element codeElement = buildElement("Code", worksheetElement);
 
         CDATASection codeSection = doc.createCDATASection(functionBody);
         codeElement.appendChild(codeSection);

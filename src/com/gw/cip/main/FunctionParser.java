@@ -8,7 +8,7 @@ import com.gw.cip.main.ui.xmlbuilder.XMLBuilderVariable;
 
 public class FunctionParser {
 
-    private String functionFilePath, inputParametersAsString = "", functionBody = "", unitName = "", functionCallName = "";
+    private String functionFilePath, inputParametersAsString = "", functionBody = "", unitName = "", functionCallName = "", pcfFileName = "";
     private LinkedList<XMLBuilderVariable> functionVariables = new LinkedList<XMLBuilderVariable>();
 
     public FunctionParser(String functionFilePath) {
@@ -36,6 +36,7 @@ public class FunctionParser {
                 }
             }
             reader.close();
+            pcfFileName = unitName + "Worksheet";
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -77,6 +78,10 @@ public class FunctionParser {
 
     public String getUnitName () {
         return this.unitName;
+    }
+
+    public String getPCFFileName() {
+        return this.pcfFileName;
     }
 
     public static void main (String args[]) {

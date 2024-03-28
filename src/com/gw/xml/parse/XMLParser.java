@@ -11,55 +11,60 @@ import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.gw.cip.main.FunctionParser;
 import com.gw.cip.main.Launcher;
 import com.gw.cip.main.ui.xmlbuilder.XMLBuilder;
 
 public class XMLParser extends XMLBuilder {
 
     private Document document;
-    private boolean fileExists=false;
+    private String unitName;
+    private File typeListFile;
     public XMLParser(Launcher uiBuilder) {
         super(uiBuilder);
     }
 
     @Override
     protected void createDocument() throws ParserConfigurationException {
-        try {
-            File typeListFile = new File(super.getUIBuilder().getTypelistFile());
-            if(typeListFile.exists() && !typeListFile.isDirectory()) {
-                fileExists=true;
-            } else {
-                fileExists=false;
-            }
+        typeListFile = new File(super.getUIBuilder().getTypelistFile());
+        unitName = super.getUIBuilder().getParsedFunction().getUnitName();
+        try{
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            DocumentBuilder docBuilder;
+            docBuilder = docFactory.newDocumentBuilder();
             document = docBuilder.parse(typeListFile);
-        } catch (SAXException e) {
+        }catch (SAXException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }catch (ParserConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     @Override
     protected void buildDocumentElements() {
         // TODO Auto-generated method stub
-        if(fileExists) {
-            String unitName = super.getUIBuilder().getParsedFunction().getUnitName();
-            Element typeCodeElement = document.createElement("typecode");
-            typeCodeElement.setAttribute("code", unitName);
-            typeCodeElement.setAttribute("desc", unitName);
-            typeCodeElement.setAttribute("name", unitName);
-            this.getRootElement().appendChild(typeCodeElement);
+        if(fileExists()) {
+            if(!utilityExists(unitName)){
+    
+                    Element typeCodeElement = document.createElement("typecode");
+                    typeCodeElement.setAttribute("code", unitName);
+                    typeCodeElement.setAttribute("desc", unitName);
+                    typeCodeElement.setAttribute("name", unitName);
+                    this.getRootElement().appendChild(typeCodeElement);
+            }
         } else {
             //new file
         }
-
     }
 
     @Override
@@ -76,13 +81,23 @@ public class XMLParser extends XMLBuilder {
         return document.getDocumentElement();
     }
 
-    private boolean utilityExists() {
-        int childNodesSize = this.getRootElement().getChildNodes().getLength();
-        System.out.println(childNodesSize);
-        for(int i=0;i<childNodesSize;i++) {
-            Element element = (Element) document.getChildNodes().item(i);
-            System.out.println(element.getAttribute("code"));
-        }
+    private boolean utilityExists(String utilitName) {
+        NodeList existingUtilities = this.getRootElement().getElementsByTagName("typecode");
+        if(existingUtilities.getLength() >0 ) {
+            for(int i =0 ;i<existingUtilities.getLength();i++) {
+                Element currentElement = (Element)existingUtilities.item(i);
+                if(currentElement.getAttribute("code").equals(utilitName)) {
+                    return true;
+                } 
+            }
+        } 
+        return false;
+    }
+
+    private boolean fileExists() {
+        if(typeListFile.exists() && !typeListFile.isDirectory()) {
+            return true;
+        } 
         return false;
     }
 
@@ -91,8 +106,7 @@ public class XMLParser extends XMLBuilder {
             Properties runTimeConfigurationProperties = new Properties();
             String runTimeConfigurationFile = System.getProperty("user.dir") + "\\config\\runtime\\runtime.properties";
             runTimeConfigurationProperties.load(new FileInputStream(runTimeConfigurationFile));
-            FunctionParser fParser = new FunctionParser("C:\\bc-ci-mvp\\Code2UI\\in\\testFunction.txt");
-            Launcher uiBuilder = new Launcher("C:\\bc-ci-mvp\\Code2UI\\in\\testFunction.txt", "Worksheet");
+            Launcher uiBuilder = new Launcher("C:\\Code2UI\\in\\testFunction.txt", "Worksheet");
             XMLParser xmlParser = new XMLParser(uiBuilder);
             xmlParser.buildXML();
         }catch(Exception e) {
